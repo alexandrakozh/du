@@ -11,11 +11,11 @@ class Du(object):
     """Class which implement calculations of the number of files in `path` and
     the amount of space on the disc, which is occupied by the files
 
-       :param str path: path to directory
-       :param int method: a number that match to the method which execute
+    :param str path: path to directory
+    :param int method: a number that match to the method which execute
          calculations. See `Du` constants `WALK_METHOD`,
         'RECURSION_METHOD', 'QUEUE_METHOD', 'SUBPROCESSES_METHOD'
-       :rtype: string
+    :rtype: string
     :return: Message with the number of files and the number of files which is
     occupied
     """
@@ -188,6 +188,12 @@ class Du(object):
         return "Total number of files is {} " \
                "and their size is {} bytes".format(*obj)
 
+    # TODO: create context manager for Du class 
+    # TODO: https://docs.python.org/2.7/library/stdtypes.html#typecontextmanager
+    # TODO: https://docs.python.org/2.7/reference/datamodel.html?highlight=__enter__#object.__enter__
+    # TODO:
+    # TODO: with du_instance.use_method(Du.RECURSION_METHOD) as d:
+    # TODO:     res = d()
 
 
 if __name__ == "__main__":
