@@ -12,5 +12,11 @@ class TestDu(unittest.TestCase):
         self.assertEqual(obj.path, '/root/')
         self.assertEqual(obj.method, Du.QUEUE_METHOD)
 
+    def test_method(self):
+        obj = Du('/root/', method=Du.RECURSION_METHOD)
+        self.assertEqual(obj.method, Du.RECURSION_METHOD)
+        obj = Du('/root/', method=4)
+        self.assertRaises(InvalidDuMethodError, Du.method)
+
 if __name__ == '__main__':
     unittest.main()
