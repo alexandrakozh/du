@@ -41,10 +41,13 @@ class Du(object):
 
     @path.setter
     def path(self, path):
-        if path[-1] != "/":
-            self._path = path + "/"
-        else:
-            self._path = path
+        try:
+            if path[-1] != "/":
+                self._path = path + "/"
+            else:
+                self._path = path
+        except:
+            raise ValueError('Path mustn\'t be an empty string')
 
     @method.setter
     def method(self, method):
