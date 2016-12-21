@@ -1,4 +1,5 @@
 import unittest
+from mock import MagicMock, patch
 
 import sys
 sys.path.append('..')
@@ -36,20 +37,17 @@ class TestDu(unittest.TestCase):
         self.assertEqual(obj2.path, '/root/')
 
     def test_call(self):
-        #test method=None
-        #obj = Du('.')
-        #self.assertTrue(obj._du_using_walk())
+        # TODO: test all methods
+        # TODO: create loop over all methods using dictionary with getattr builtin operator
+        with patch.object(Du, '_du_using_walk') as mock_method:
+            obj = Du('.')
+            obj(method=Du.WALK_METHOD)
+            mock_method.assert_called()
 
-        #test allowed methods
-        obj2 = Du('.', method=Du.RECURSION_METHOD)
-        self.assertTrue(obj2._du_using_recursion())
-        obj3 = Du('.', method=Du.SUBPROCESSES_METHOD)
-        self.assertTrue(obj3._du_using_subprocesses())
+        # TODO: test that default method will be called
 
-        #test exceptions
-        obj4 = Du('.')
         with self.assertRaises(InvalidDuMethodError):
-            obj4.method = "foo"
+            obj(method=0)
 
     def test_du_using_walk(self):
         obj = Du('./tests/test_folder', method=Du.WALK_METHOD)
