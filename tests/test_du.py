@@ -51,8 +51,11 @@ class TestDu(unittest.TestCase):
               mock_method.assert_called()
 
     def test_methods(self):
-        pass
-
+        for key, value in methods_dict.items():
+            obj = Du('./test_folder')
+            method = getattr(obj, value)
+            res = method()
+            self.assertEqual(res, Du.Result(total_number_of_files=6, total_size_of_files=6178))
 
     def test_str(self):
         for key, value in methods_dict.items():
