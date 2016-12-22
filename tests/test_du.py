@@ -5,83 +5,73 @@ import sys
 sys.path.append('..')
 from du import Du, InvalidDuMethodError
 
-allowed_methods = (Du.WALK_METHOD, Du.RECURSION_METHOD, 
-        Du.QUEUE_METHOD, Du.SUBPROCESSES_METHOD
-        )
+methods_dict = {
+    Du.WALK_METHOD: '_du_using_walk', 
+    Du.RECURSION_METHOD: '_du_using_recursion',
+    Du.QUEUE_METHOD: '_du_using_list', 
+    Du.SUBPROCESSES_METHOD : '_du_using_subprocesses'
+    }
+
 
 class TestDu(unittest.TestCase):
 
     def test_init(self):
-        obj = Du('/root/', method=Du.QUEUE_METHOD)
-        self.assertEqual(obj.path, '/root/')
-        self.assertEqual(obj.method, Du.QUEUE_METHOD)
+        for key, value in methods_dict.items():
+            obj = Du('/root/', method=key)
+            self.assertEqual(obj.path, '/root/')
+            self.assertEqual(obj.method, key)
+           
         obj2 = Du('/root/')
         self.assertEqual(obj2.path, '/root/')
         self.assertEqual(obj2.method, Du.WALK_METHOD)
 
     def test_method(self):
         obj = Du('.')
-        # test of allowed method
-        for m in allowed_methods:
-            obj.method = m
-            self.assertEqual(obj.method, m)
+        for key, value in methods_dict.items():
+            obj.method = key
+            self.assertEqual(obj.method, key)
 
-        # test of all other
         with self.assertRaises(InvalidDuMethodError):
             obj.method = 0
 
     def test_path(self):
         obj = Du('/root')
         self.assertEqual(obj.path, '/root/')
-        obj2 = Du('/root/')
-        self.assertEqual(obj2.path, '/root/')
+        obj = Du('/root/')
+        self.assertEqual(obj.path, '/root/')
 
     def test_call(self):
-        # TODO: test all methods
-        # TODO: create loop over all methods using dictionary with getattr builtin operator
-        with patch.object(Du, '_du_using_walk') as mock_method:
-            obj = Du('.')
-            obj(method=Du.WALK_METHOD)
-            mock_method.assert_called()
+    #     # with patch.object(Du, '_du_using_walk') as mock_method:
+    #     #     obj = Du('.')
+    #     #     obj(method=Du.WALK_METHOD)
+    #     #     mock_method.assert_called()
 
-        # TODO: test that default method will be called
+        obj = Du('.')
+        a = getattr(obj, methods_dict[Du.WALK_METHOD])
+        self.assertEqual(obj(), a())
+
+
+        for key, value in methods_dict.items():
+            obj = Du('.', method=key)
+            a = getattr(obj, value)
+            self.assertEqual(obj(), a())
 
         with self.assertRaises(InvalidDuMethodError):
             obj(method=0)
 
-    def test_du_using_walk(self):
-        obj = Du('./tests/test_folder', method=Du.WALK_METHOD)
-        self.assertTrue(Du.Result(total_number_of_files=6, total_size_of_files=6178))
-        obj2 = Du('./tests/test_folder', method=1)
-        self.assertTrue(Du.Result(total_number_of_files=6, total_size_of_files=6178))
-        obj3 = Du('./tests/test_folder')
-        self.assertTrue(Du.Result(total_number_of_files=6, total_size_of_files=6178))
-
-    def test_du_using_recursion(self):
-        obj = Du('./tests/test_folder', method=Du.RECURSION_METHOD)
-        self.assertTrue(Du.Result(total_number_of_files=6, total_size_of_files=6178))
-        obj2 = Du('./tests/test_folder', method=2)
-        self.assertTrue(Du.Result(total_number_of_files=6, total_size_of_files=6178))
-
-    def test_du_using_list(self):
-        obj = Du('./tests/test_folder', method=Du.QUEUE_METHOD)
-        self.assertTrue(Du.Result(total_number_of_files=6, total_size_of_files=6178))
-        obj2 = Du('./tests/test_folder', method=3)
-        self.assertTrue(Du.Result(total_number_of_files=6, total_size_of_files=6178))
-
-    def test_du_using_subprocesses(self):
-        obj = Du('./tests/test_folder', method=Du.SUBPROCESSES_METHOD)
-        self.assertTrue(Du.Result(total_number_of_files=6, total_size_of_files=6178))
-        obj2 = Du('./tests/test_folder', method=4)
-        self.assertTrue(Du.Result(total_number_of_files=6, total_size_of_files=6178))
+    def test_methods(self):
+        for key, value in methods_dict.items():
+            mock_method = patch.object(Du, value)
+            obj = Du('.')
+            obj(method=key)
+            mock_method.assert_called()
 
     def test_str(self):
-        obj = Du('./tests/test_folder', method=Du.RECURSION_METHOD)
-        self.assertTrue('Total number of files is 6 and their size is 6178 bytes')
-        obj2 = Du('./tests/test_folder', method=1)
-        self.assertTrue('Total number of files is 6 and their size is 6178 bytes')
-        obj3 = Du('./tests/test_folder')
-        self.assertTrue('Total number of files is 6 and their size is 6178 bytes')
+        for key, value in methods_dict.items():
+            obj = Du('./test_folder', method=key)
+            self.assertEqual(str(obj), 'Total number of files is 6 and their size is 6178 bytes')
+
 
 if __name__ == '__main__':
     unittest.main()
+   
