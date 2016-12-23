@@ -168,17 +168,14 @@ class Du(object):
         size_result, _  = size_process.communicate()
         lines = size_result.split("\n")
         separator = re.compile("\s+")
+        num = 0
         for line in lines:
-        	if len(line.strip()) == 0:
-        		continue
-        	file_info = separator.split(line)
-        	file_size = int(file_info[6])
-        	size += file_size
-
-        list_of_files_process = Popen(['find', self.path, '-type', 'f'], stdout=PIPE)
-        list_of_files, _ = list_of_files_process.communicate()
-        num = len(list_of_files.split("\n")) - 1
-
+            if len(line.strip()) == 0:
+                continue
+            file_info = separator.split(line)
+            file_size = int(file_info[6])
+            size += file_size
+            num += 1
         return Du.Result(num, size)
 
     def __str__(self):
