@@ -104,6 +104,14 @@ class TestDu(unittest.TestCase):
             self.assertEqual(str(obj), 
                     'Total number of files is 4 and their size is 16 bytes')
 
+    def test_context_manager(self):
+        obj = Du('/root/', method=Du.WALK_METHOD)
+        with obj.use_method(Du.RECURSION_METHOD) as d:
+            self.assertEqual(d.path, '/root/')
+            self.assertEqual(d.method, Du.RECURSION_METHOD)
+            self.assertIsNot(obj, d)
+
+
 
 if __name__ == '__main__':
     unittest.main()

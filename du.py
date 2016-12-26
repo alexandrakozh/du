@@ -11,13 +11,18 @@ class Du(object):
     """Class which implement calculations of the number of files in `path` and
     the amount of space on the disc, which is occupied by the files
 
+    .. example::
+        >>> du = Du('/tmp')
+        >>> with du.use_method(Du.RECURSION_METHOD) as d:
+                res = d()    
+
     :param str path: path to directory
     :param int method: a number that match to the method which execute
          calculations. See `Du` constants `WALK_METHOD`,
         'RECURSION_METHOD', 'QUEUE_METHOD', 'SUBPROCESSES_METHOD'
     :rtype: string
     :return: Message with the number of files and the number of files which is
-    occupied
+        occupied
     """
 
     WALK_METHOD = 1
@@ -189,13 +194,15 @@ class Du(object):
         obj = self()
         return "Total number of files is {} " \
                "and their size is {} bytes".format(*obj)
+    
+    def use_method(self,method):
+        return Du(self.path, method)
 
-    # TODO: create context manager for Du class 
-    # TODO: https://docs.python.org/2.7/library/stdtypes.html#typecontextmanager
-    # TODO: https://docs.python.org/2.7/reference/datamodel.html?highlight=__enter__#object.__enter__
-    # TODO:
-    # TODO: with du_instance.use_method(Du.RECURSION_METHOD) as d:
-    # TODO:     res = d()
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        return False
 
 
 if __name__ == "__main__":
